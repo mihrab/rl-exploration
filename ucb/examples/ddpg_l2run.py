@@ -112,7 +112,7 @@ env_name = 'l2run'
 current_time_sec = int(time.time())
 base_dir = 'log/l2run/{}'.format(current_time_sec)
 pathlib.Path(base_dir).mkdir(parents=True, exist_ok=False)
-logging.basicConfig(filename='{}/{}.log'.format(env_name, base_dir), level=logging.DEBUG)
+logging.basicConfig(filename='{}/{}.log'.format(base_dir, env_name), level=logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 logging.info('setting base directory to {}'.format(base_dir))
 
