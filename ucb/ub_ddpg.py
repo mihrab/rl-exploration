@@ -9,7 +9,6 @@ import keras.layers as layers
 import keras.optimizers as optimizers
 
 from rl.core import Agent
-from rl.random import OrnsteinUhlenbeckProcess
 from rl.util import *
 
 
@@ -20,7 +19,7 @@ def mean_q(y_true, y_pred):
 # Deep DPG as described by Lillicrap et al. (2015)
 # http://arxiv.org/pdf/1509.02971v2.pdf
 # http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.646.4324&rep=rep1&type=pdf
-class DDPGAgent(Agent):
+class UBDDPGAgent(Agent):
     """Write me
     """
     def __init__(self, nb_actions, actor, critic, nb_players, critic_action_inputs, memory,
@@ -41,7 +40,7 @@ class DDPGAgent(Agent):
         if not hasattr(critic.input, '__len__') or len(critic.input) < 2:
             raise ValueError('Critic "{}" does not have enough inputs. The critic must have at least two inputs, one for the action and one for the observation.'.format(critic))
 
-        super(DDPGAgent, self).__init__(**kwargs)
+        super(UBDDPGAgent, self).__init__(**kwargs)
 
         # Soft vs hard target model updates.
         if target_model_update < 0:
