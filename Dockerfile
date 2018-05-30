@@ -5,6 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       bzip2 \
       g++ \
       git \
+      python-dev \
+      build-essential \
       libblas-dev \
       liblapack-dev \
       gfortran \
@@ -42,25 +44,23 @@ RUN conda install -y python=${python_version} && \
     conda install -c kidzik opensim && \
     pip install --upgrade pip && \
     pip install \
-      sklearn_pandas \
+      gym \
+      pyglet \
       tensorflow && \
     conda install \
       bcolz \
-      h5py \
-      mkl \
-      nose \
-      Pillow \
-      pandas \
-      pyyaml \
-      six && \
+      h5py && \
     pip install keras-rl && \
-    pip install git+https://github.com/stanfordnmbl/osim-rl.git &&\
     conda clean -yt
 
-ADD . /src 
+RUN pip install  git+git://github.com/stanfordnmbl/osim-rl.git
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
+# ADD . /src
+
 WORKDIR /src
+
+RUN git clone git://github.com/mihrab/rl-exploration.git .
 
 CMD python -m ucb.examples.ddpg_l2run
