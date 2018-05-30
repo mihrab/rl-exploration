@@ -2,20 +2,21 @@ import numpy as np
 import gym
 import types
 import time
+import pathlib
+import logging
 
 
 from keras.models import Sequential, Model
 from keras.layers import Dense, Activation, Flatten, Input, Concatenate, concatenate
 from keras.optimizers import Adam
 
-from rl.agents import DDPGAgent
+from ucb.ub_ddpg import UBDDPGAgent
 from rl.memory import SequentialMemory
 from rl.random import OrnsteinUhlenbeckProcess
 from rl.callbacks import FileLogger, ModelIntervalCheckpoint
 
 from osim.env import L2RunEnv
 from osim.env.utils.mygym import convert_to_gym
-
 
 
 def gymify_osim_env(env):
@@ -99,7 +100,7 @@ print(critic.summary())
 # Finally, we configure and compile our agent. You can use every built-in Keras optimizer and
 # even the metrics!
 memory = SequentialMemory(limit=100000, window_length=1)
-agent = DDPGAgent(
+agent = UBDDPGAgent(
     nb_actions=nb_actions, actor=actor, critic=critic,
     nb_players=nb_players, critic_action_inputs=action_inputs,
     memory=memory, nb_steps_warmup_critic=100, nb_steps_warmup_actor=100,
@@ -109,11 +110,16 @@ agent.compile(Adam(lr=.001, clipnorm=1.), metrics=['mae'])
 
 env_name = 'l2run'
 current_time_sec = int(time.time())
-base_dir = '~/research/src/keras-rl/log/l2run/{}'.format(current_time_sec)
+base_dir = 'log/l2run/{}'.format(current_time_sec)
+pathlib.Path(base_dir).mkdir(parents=True, exist_ok=False)
+logging.basicConfig(filename='{}/{}.log'.format(env_name, base_dir), level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
+logging.info('setting base directory to {}'.format(base_dir))
+
 checkpoint_weights_filename = '{}/ddpg_{}_weights_{{step}}.h5f'.format(base_dir, env_name)
 log_filename = '{}/ddpg_{}_log.json'.format(base_dir, env_name)
 callbacks = [ModelIntervalCheckpoint(checkpoint_weights_filename, interval=10000)]
-callbacks += [FileLogger(log_filename, interval=10)]
+callbacks += [FileLogger(log_filename, interval=100)]
 
 # Okay, now it's time to learn something! We visualize the training here for show, but this
 # slows down training quite a lot. You can always safely abort the training prematurely using
