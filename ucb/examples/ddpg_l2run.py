@@ -118,11 +118,8 @@ logging.info('setting base directory to {}'.format(base_dir))
 
 checkpoint_weights_filename = '{}/ddpg_{}_weights_{{step}}.h5f'.format(base_dir, env_name)
 filelogger_file = '{}/ddpg_{}_log.json'.format(base_dir, env_name)
-csvlogger_file = '{}/ddpg_{}_log.csv'.format(base_dir, env_name)
 callbacks = [ModelIntervalCheckpoint(checkpoint_weights_filename, interval=10000)]
-callbacks += [
-        FileLogger(log_filename, interval=1000),
-        CSVLogger(csvlogger_file)]
+callbacks += [FileLogger(filelogger_file, interval=1000)]
 
 # Okay, now it's time to learn something! We visualize the training here for show, but this
 # slows down training quite a lot. You can always safely abort the training prematurely using
