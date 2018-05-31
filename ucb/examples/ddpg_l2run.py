@@ -117,16 +117,21 @@ logging.basicConfig(filename='{}/{}.log'.format(base_dir, env_name), level=loggi
 logging.info('setting base directory to {}'.format(base_dir))
 
 checkpoint_weights_filename = '{}/ddpg_{}_weights_{{step}}.h5f'.format(base_dir, env_name)
-log_filename = '{}/ddpg_{}_log.json'.format(base_dir, env_name)
+filelogger_file = '{}/ddpg_{}_log.json'.format(base_dir, env_name)
+csvlogger_file = '{}/ddpg_{}_log.csv'.format(base_dir, env_name)
 callbacks = [ModelIntervalCheckpoint(checkpoint_weights_filename, interval=10000)]
-callbacks += [FileLogger(log_filename, interval=1000000)]
+callbacks += [
+        FileLogger(log_filename, interval=1000),
+        CSVLogger(csvlogger_file)]
 
 # Okay, now it's time to learn something! We visualize the training here for show, but this
 # slows down training quite a lot. You can always safely abort the training prematurely using
 # Ctrl + C.
-agent.fit(env, nb_steps=1000000, visualize=False, verbose=1,
+history = agent.fit(env, nb_steps=1000000, visualize=False, verbose=1,
         nb_max_episode_steps=1000, callbacks=callbacks)
-
+training_history_file = '{}/ddpg_{}_training_history.pickle'.format(base_dir, env_name)
+with open(training_history_file, 'wb') as file_pi:
+    pickle.dump(history.history, file_pi)
 # After training is done, we save the final weights.
 agent.save_weights('ddpg_l2run_weights.h5f', overwrite=True)
 

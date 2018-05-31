@@ -64,4 +64,4 @@ WORKDIR /src
 
 RUN git clone git://github.com/mihrab/rl-exploration.git .
 
-CMD python -m ucb.examples.ddpg_l2run > /src/stdout.log
+CMD python -m ucb.examples.ddpg_l2run > /src/log/stdout.log
