@@ -32,8 +32,8 @@ def gymify_osim_env(env):
     return env
 
 # Get the environment and extract the number of actions.
-# env = L2RunEnv(visualize=False)
-env = gymify_osim_env(L2RunEnv(visualize=False))
+env = L2RunEnv(visualize=False)
+# env = gymify_osim_env(L2RunEnv(visualize=False))
 env.reset()
 
 np.random.seed(123)
@@ -41,7 +41,7 @@ env.seed(123)
 assert len(env.action_space.shape) == 1
 nb_actions = env.action_space.shape[0]
 
-nb_players = 8
+nb_players = 16
 # Next, we build a very simple model.
 
 observation_input = Input(
@@ -119,13 +119,13 @@ logging.info('setting base directory to {}'.format(base_dir))
 checkpoint_weights_filename = '{}/ddpg_{}_weights_{{step}}.h5f'.format(base_dir, env_name)
 log_filename = '{}/ddpg_{}_log.json'.format(base_dir, env_name)
 callbacks = [ModelIntervalCheckpoint(checkpoint_weights_filename, interval=10000)]
-callbacks += [FileLogger(log_filename, interval=100)]
+callbacks += [FileLogger(log_filename, interval=1000000)]
 
 # Okay, now it's time to learn something! We visualize the training here for show, but this
 # slows down training quite a lot. You can always safely abort the training prematurely using
 # Ctrl + C.
 agent.fit(env, nb_steps=1000000, visualize=False, verbose=1,
-        nb_max_episode_steps=10000, callbacks=callbacks)
+        nb_max_episode_steps=1000, callbacks=callbacks)
 
 # After training is done, we save the final weights.
 agent.save_weights('ddpg_l2run_weights.h5f', overwrite=True)

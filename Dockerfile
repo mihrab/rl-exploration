@@ -50,10 +50,11 @@ RUN conda install -y python=${python_version} && \
     conda install \
       bcolz \
       h5py && \
-    pip install keras-rl && \
-    conda clean -yt
-
-RUN pip install  git+git://github.com/stanfordnmbl/osim-rl.git
+    conda clean -yt && \
+    pip install \
+      git+git://github.com/keras-rl/keras-rl.git \
+      git+git://github.com/stanfordnmbl/osim-rl.git
+          
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
@@ -63,4 +64,4 @@ WORKDIR /src
 
 RUN git clone git://github.com/mihrab/rl-exploration.git .
 
-CMD python -m ucb.examples.ddpg_l2run
+CMD python -m ucb.examples.ddpg_l2run > /src/stdout.log
